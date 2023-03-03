@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbitmq="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/rabbit/spring-rabbit
+       http://www.springframework.org/schema/rabbit">
+    <context:property-placeholder location="classpath:rabbitmq.properties"/>
+
+    <rabbitmq:connection-factory id="connectionFactory" host="${rabbitmq.host}"
+                                 port="${rabbitmq.port}"
+                                 username="${rabbitmq.username}"
+                                 password="${rabbitmq.password}"
+                                 virtual-host="${rabbitmq.virtual-host}"
+                                 publisher-confirms="true"/>
+
+
+    <rabbitmq:admin connection-factory="connectionFactory"/>
+
+
+    <rabbitmq:queue id="spring-queue_1" name="spring-queue_1" auto-declare="true"/>
+    <rabbitmq:queue id="spring-queue_2" name="spring-queue_2" auto-declare="true"/>
+
+    <rabbitmq:fanout-exchange id="fanoutExchange" name="spring-fanout-exchange" auto-declare="true">
+        <rabbitmq:bindings>
+            <rabbitmq:binding queue="spring-queue_1"/>
+            <rabbitmq:binding queue="spring-queue_2"/>
+        </rabbitmq:bindings>
+    </rabbitmq:fanout-exchange>
+
+    <rabbitmq:queue id="spring-topic_1" name="spring-topic_1" auto-declare="true"/>
+    <rabbitmq:queue id="spring-topic_2" name="spring-topic_2" auto-declare="true"/>
+    <rabbitmq:queue id="spring-topic_3" name="spring-topic_3" auto-declare="true"/>
+
+
+    <rabbitmq:topic-exchange id="spring-topic-exchange" name="spring-topic-exchange" auto-declare="true">
+        <rabbitmq:bindings>
+            <rabbitmq:binding pattern="elven.*" queue="spring-topic_1"/>
+            <rabbitmq:binding pattern="elven.#" queue="spring-topic_2"/>
+            <rabbitmq:binding pattern="sloven.#" queue="spring-topic_3"/>
+        </rabbitmq:bindings>
+    </rabbitmq:topic-exchange>
+
+
+    <rabbitmq:template id="rabbitTemplate" connection-factory="connectionFactory"/>
+
+
+    <!-- 消息可靠性投递 -->
+    <rabbitmq:queue id="test-queue-config" name="test-queue"></rabbitmq:queue>
+    <rabbitmq:direct-exchange id="test-direct-config" name="test-direct">
+        <rabbitmq:bindings>
+            <rabbitmq:binding queue="test-queue-config" key="config"></rabbitmq:binding>
+        </rabbitmq:bindings>
+    </rabbitmq:direct-exchange>
+
+
+</beans>

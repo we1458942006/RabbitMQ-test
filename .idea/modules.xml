@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/RabbitMQ-test.iml" filepath="$PROJECT_DIR$/.idea/RabbitMQ-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/consumer-springboot/consumer-springboot.iml" filepath="$PROJECT_DIR$/consumer-springboot/consumer-springboot.iml" />
     </modules>
   </component>
 </project>
